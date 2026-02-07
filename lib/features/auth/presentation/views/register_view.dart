@@ -1,0 +1,162 @@
+import 'package:catalyst/core/utils/assets.dart';
+import 'package:catalyst/core/utils/routs.dart';
+import 'package:catalyst/core/utils/vlidation.dart';
+import 'package:catalyst/core/widgets/base_scaffold.dart';
+import 'package:catalyst/features/auth/presentation/cubit/register%20cubit/register_cubit.dart';
+import 'package:catalyst/features/auth/presentation/cubit/register%20cubit/register_state.dart';
+import 'package:catalyst/features/auth/presentation/widgets/auth_background.dart';
+import 'package:catalyst/features/auth/presentation/widgets/custom_button.dart';
+import 'package:catalyst/features/auth/presentation/widgets/custom_textformfield.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+
+class RegisterView extends StatefulWidget {
+  const RegisterView({super.key});
+
+  @override
+  State<RegisterView> createState() => _RegisterViewState();
+}
+
+class _RegisterViewState extends State<RegisterView> {
+  final _formKey = GlobalKey<FormState>();
+  AutovalidateMode autoValidate = AutovalidateMode.disabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return BaseScaffold(
+      child: BlocConsumer<RegisterCubit, RegisterCubitState>(
+        listener: (context, state) {
+          if (state is RegisterCubitSuccess) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.successMessage)));
+            GoRouter.of(context).go(Routs.login);
+          } else if (state is RegisterCubitError) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.errorMessage)));
+          }
+        },
+        builder: (context, state) {
+          return Stack(
+            children: [
+              /// الخلفية مع الـ Scroll
+              Opacity(
+                opacity: state is RegisterCubitLoading ? 0.5 : 1,
+                child: AuthBackground(
+                  child: Form(
+                    key: _formKey,
+                    autovalidateMode: autoValidate,
+                    child: Column(
+                      children: [
+                        SvgPicture.asset(Assets.catalyst, fit: BoxFit.cover),
+                        const SizedBox(height: 60),
+
+                        /// Name
+                        CustomTextformfield(
+                          controller: context
+                              .read<RegisterCubit>()
+                              .nameController,
+                          label: 'Name',
+                          icon: CupertinoIcons.person,
+                          validator: Validation.validateName,
+                        ),
+                        const SizedBox(height: 20),
+
+                        /// Email
+                        CustomTextformfield(
+                          controller: context
+                              .read<RegisterCubit>()
+                              .emailController,
+                          label: 'Email',
+                          icon: CupertinoIcons.mail,
+                          validator: Validation.validateEmail,
+                        ),
+                        const SizedBox(height: 20),
+
+                        /// Password
+                        CustomTextformfield(
+                          controller: context
+                              .read<RegisterCubit>()
+                              .passwordController,
+                          label: 'Password',
+                          icon: CupertinoIcons.lock,
+                          validator: Validation.validatePassword,
+                          isPassword: true,
+                        ),
+                        const SizedBox(height: 20),
+
+                        /// Confirm Password
+                        CustomTextformfield(
+                          controller: context
+                              .read<RegisterCubit>()
+                              .confirmPasswordController,
+                          label: 'Confirm Password',
+                          icon: CupertinoIcons.lock,
+                          isPassword: true,
+                          validator: (value) =>
+                              Validation.validateConfirmPassword(
+                                value,
+                                context
+                                    .read<RegisterCubit>()
+                                    .passwordController
+                                    .text,
+                              ),
+                        ),
+
+                        const SizedBox(height: 50),
+
+                        /// Sign Up button
+                        CustomButton(
+                          text: 'Sign Up',
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              context.read<RegisterCubit>().signUp();
+                            } else {
+                              setState(() {
+                                autoValidate = AutovalidateMode.always;
+                              });
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 20),
+
+                        /// Already have account
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Already have an account?',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            const SizedBox(width: 10),
+                            TextButton(
+                              onPressed: () {
+                                GoRouter.of(context).go(Routs.login);
+                              },
+                              child: const Text(
+                                'Login',
+                                style: TextStyle(color: Color(0xffFC5185)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              /// اللودينج لو شغال
+              if (state is RegisterCubitLoading)
+                const Center(child: CircularProgressIndicator()),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
