@@ -4,6 +4,7 @@ import 'package:catalyst/core/widgets/base_scaffold.dart';
 import 'package:catalyst/features/drawer/drawer.dart';
 import 'package:catalyst/features/home/presentation/views/home_view.dart';
 import 'package:catalyst/features/teachers%20corses/presentation/views/teatcher_corses.dart';
+import 'package:catalyst/features/my_lessons/presentation/views/my_classes_view.dart';
 import 'package:flutter/material.dart';
 import 'package:liquid_glass_navbar/liquid_glass_navbar.dart';
 //import 'package:liquid_glass_navbar/liquid_glass_navbar.dart';
@@ -21,11 +22,16 @@ class _RootState extends State<Root> {
   final items = [
     LiquidGlassNavItem(icon: Icons.home, label: "Home"),
     LiquidGlassNavItem(icon: Icons.class_, label: "My Classes"),
-    LiquidGlassNavItem(icon: Icons.school, label: "Courses"),
+    LiquidGlassNavItem(icon: Icons.school, label: "Classes"),
     LiquidGlassNavItem(icon: Icons.person, label: "Profile"),
   ];
 
-  final pages = [const HomeView(), const TeacherCoursesView()];
+  final pages = [
+    const HomeView(),
+    const MyClassesView(),
+    const TeacherCoursesView(),
+    const Scaffold(body: Center(child: Text("Profile"))),
+  ];
 
   @override
   Widget build(BuildContext context) {

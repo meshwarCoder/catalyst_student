@@ -1,5 +1,5 @@
-import 'package:catalyst/core/api/constant.dart';
-import 'package:catalyst/core/api/dio_service.dart';
+import 'package:catalyst/core/databases/api/constant.dart';
+import 'package:catalyst/core/databases/api/dio_service.dart';
 import 'package:catalyst/core/errors/exceptions.dart';
 import 'package:catalyst/features/teachers%20corses/data/models/get_all_courses_model.dart';
 import 'package:catalyst/features/teachers%20corses/data/repos/courses__repo.dart';
@@ -30,8 +30,7 @@ class CoursesRepoImpl implements CoursesRepo {
   Future<Either<Failure, String>> joinRequest(int id) async {
     try {
       final response = await dioService.post(
-        path: EndPoint.joinLesson,
-        data: {'lessonId': id, 'message': 'Join request sent successfully'},
+        path: EndPoint.joinLesson.replaceAll('{lessonId}', id.toString()),
       );
 
       final message =

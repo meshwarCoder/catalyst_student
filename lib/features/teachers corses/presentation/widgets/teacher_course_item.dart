@@ -1,6 +1,7 @@
+import 'package:catalyst/features/teachers%20corses/data/models/get_all_courses_model.dart';
 import 'package:catalyst/core/utils/app_colors.dart';
+import 'package:catalyst/core/widgets/custom_button.dart';
 import 'package:catalyst/core/widgets/custom_text.dart';
-import 'package:catalyst/features/auth/presentation/widgets/custom_button.dart';
 import 'package:catalyst/features/teachers%20corses/presentation/cubits/join%20lesson%20cubit/join_lesson_cubit.dart';
 import 'package:catalyst/features/teachers%20corses/presentation/cubits/join%20lesson%20cubit/join_lesson_state.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class TeacherCourseItem extends StatelessWidget {
   const TeacherCourseItem({super.key, required this.course});
 
-  final dynamic course; // النوع حسب الـ model بتاعك
+  final Lesson course;
 
   @override
   Widget build(BuildContext context) {
@@ -101,10 +102,13 @@ class TeacherCourseItem extends StatelessWidget {
 
                 const SizedBox(height: 18),
                 CustomButton(
-                  text: 'Join Request',
-                  onPressed: () {
-                    context.read<JoinLessonCubit>().joinLesson(course.id);
-                  },
+                  text: course.isJoined ? 'Already Joined' : 'Join Request',
+                  backgroundColor: course.isJoined ? Colors.grey : null,
+                  onPressed: course.isJoined
+                      ? null
+                      : () {
+                          context.read<JoinLessonCubit>().joinLesson(course.id);
+                        },
                 ),
               ],
             ),

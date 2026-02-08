@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:catalyst/core/errors/exceptions.dart';
-import 'package:catalyst/features/auth/data/models/auth_response_model.dart';
-import 'package:catalyst/features/auth/data/models/signup_request.dart';
+import 'package:catalyst/core/services/notification_services.dart';
+import 'package:catalyst/features/auth/data/models/auth_request_model.dart';
 import 'package:catalyst/features/auth/data/repos/auth_repo_implementation.dart';
 import 'package:dartz/dartz.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'register_state.dart';
@@ -13,11 +16,8 @@ class RegisterCubit extends Cubit<RegisterCubitState> {
   final AuthRepoImplementation _authRepo;
 
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController userNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-  final TextEditingController barthYearController = TextEditingController();
-  final TextEditingController curentAcademicYearController =
-      TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
@@ -25,21 +25,41 @@ class RegisterCubit extends Cubit<RegisterCubitState> {
   Future<void> signUp() async {
     emit(RegisterCubitLoading());
 
-    Either<Failure, AuthResponseModel> result = await _authRepo.signUp(
+    // Get FCM Token
+    String? fcmToken = await NotificationService.init();
+
+    // Get Device Info
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    String? deviceId;
+    String? deviceType;
+
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      deviceId = androidInfo.id;
+      deviceType = androidInfo.model;
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      deviceId = iosInfo.identifierForVendor;
+      deviceType = iosInfo.model;
+    }
+
+    Either<Failure, void> result = await _authRepo.signUp(
       SignUpRequest(
         fullName: nameController.text,
+        userName: userNameController.text,
         email: emailController.text,
         password: passwordController.text,
-        phone: phoneController.text,
-        birthYear: int.parse(barthYearController.text),
-        currentAcademicYear: curentAcademicYearController.text,
-        bio: "طالب مجتهد يحب البرمجة والرياضيات",
+        deviceData: DeviceData(
+          fcmToken: fcmToken ?? "unKnown",
+          deviceId: deviceId ?? "unKnown",
+          deviceType: deviceType ?? "unKnown",
+        ),
       ).toJson(),
     );
 
     result.fold(
       (failure) => emit(RegisterCubitError(failure.errMessage)),
-      (data) => emit(RegisterCubitSuccess(data.message)),
+      (_) => emit(RegisterCubitSuccess("Register successfully")),
     );
   }
 }

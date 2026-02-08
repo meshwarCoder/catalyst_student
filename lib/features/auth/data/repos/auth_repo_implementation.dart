@@ -1,79 +1,52 @@
-import 'package:catalyst/core/api/constant.dart';
-import 'package:catalyst/core/api/dio_service.dart';
 import 'package:catalyst/core/errors/exceptions.dart';
-import 'package:catalyst/features/auth/data/models/auth_response_model.dart';
+import 'package:catalyst/features/auth/data/data_source/remote_data_source.dart';
 import 'package:catalyst/features/auth/data/models/update_password_model.dart';
-import 'package:catalyst/features/auth/data/repos/auth_repo.dart';
+import 'package:catalyst/features/auth/domain/repos/auth_repo.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
 class AuthRepoImplementation implements AuthRepo {
-  final DioService dioService;
-  AuthRepoImplementation({required this.dioService});
+  final RemoteDataSourceImplementation remoteDataSourceImplementation;
+  AuthRepoImplementation({required this.remoteDataSourceImplementation});
 
   // =================== login ===================
   @override
-  Future<Either<Failure, AuthResponseModel>> login(
-    Map<String, dynamic> loginData,
-  ) async {
+  Future<Either<Failure, bool>> login(Map<String, dynamic> loginData) async {
     try {
-      final response = await dioService.post(
-        path: EndPoint.login,
-        data: loginData,
-      );
-      return right(AuthResponseModel.fromJson(response.data));
+      final isConfirmed = await remoteDataSourceImplementation.login(loginData);
+      return Right(isConfirmed);
     } catch (e) {
       if (e is DioException) {
-        return left(ServerFailure.fromDioError(e));
+        return Left(ServerFailure.fromDioError(e));
       }
-      return left(ServerFailure(e.toString()));
+      return Left(ServerFailure(e.toString()));
     }
   }
 
   // =================== signUp ===================
   @override
-  Future<Either<Failure, AuthResponseModel>> signUp(
-    Map<String, dynamic> signUpData,
-  ) async {
+  Future<Either<Failure, void>> signUp(Map<String, dynamic> signUpData) async {
     try {
-      final response = await dioService.post(
-        path: EndPoint.signUp,
-        data: signUpData,
-      );
-      return right(AuthResponseModel.fromJson(response.data));
+      await remoteDataSourceImplementation.signUp(signUpData);
+      return const Right(null);
     } catch (e) {
       if (e is DioException) {
-        return left(ServerFailure.fromDioError(e));
+        return Left(ServerFailure.fromDioError(e));
       }
-      return left(ServerFailure(e.toString()));
+      return Left(ServerFailure(e.toString()));
     }
   }
 
-  // =================== signOut ===================
-  @override
-  Future<Either<Failure, AuthResponseModel>> signOut() async {
-    try {
-      final response = await dioService.post(path: EndPoint.signUp);
-      return right(AuthResponseModel.fromJson(response.data));
-    } catch (e) {
-      if (e is DioException) {
-        return left(ServerFailure.fromDioError(e));
-      }
-      return left(ServerFailure(e.toString()));
-    }
-  }
-
-  // =================== forgotPassword ===================
+  // =================== forgotPassword => (send email with reset link) ===================
   @override
   Future<Either<Failure, UpdatePasswordResponseModel>> forgotPassword(
     Map<String, dynamic> forgotPasswordData,
   ) async {
     try {
-      final response = await dioService.post(
-        path: EndPoint.forgotPassword,
-        data: forgotPasswordData,
+      final response = await remoteDataSourceImplementation.forgotPassword(
+        forgotPasswordData,
       );
-      return right(UpdatePasswordResponseModel.fromJson(response.data));
+      return right(response);
     } catch (e) {
       if (e is DioException) {
         return left(ServerFailure.fromDioError(e));
@@ -82,17 +55,15 @@ class AuthRepoImplementation implements AuthRepo {
     }
   }
 
-  // =================== verifyCode ===================
+  // =================== resendVerificationEmail ===================
   @override
-  Future<Either<Failure, UpdatePasswordResponseModel>> verifyCode(
-    Map<String, dynamic> verifyData,
+  Future<Either<Failure, UpdatePasswordResponseModel>> resendVerificationEmail(
+    Map<String, dynamic> resendData,
   ) async {
     try {
-      final response = await dioService.post(
-        path: EndPoint.verifyCode,
-        data: verifyData,
-      );
-      return right(UpdatePasswordResponseModel.fromJson(response.data));
+      final response = await remoteDataSourceImplementation
+          .resendVerificationEmail(resendData);
+      return right(response);
     } catch (e) {
       if (e is DioException) {
         return left(ServerFailure.fromDioError(e));
@@ -101,22 +72,14 @@ class AuthRepoImplementation implements AuthRepo {
     }
   }
 
-  // =================== resetPassword ===================
+  // =================== logout ===================
   @override
-  Future<Either<Failure, UpdatePasswordResponseModel>> resetPassword(
-    Map<String, dynamic> resetPasswordData,
-  ) async {
+  Future<Either<Failure, void>> logout() async {
     try {
-      final response = await dioService.post(
-        path: EndPoint.resetPassword,
-        data: resetPasswordData,
-      );
-      return right(UpdatePasswordResponseModel.fromJson(response.data));
+      await remoteDataSourceImplementation.logout();
+      return const Right(null);
     } catch (e) {
-      if (e is DioException) {
-        return left(ServerFailure.fromDioError(e));
-      }
-      return left(ServerFailure(e.toString()));
+      return Left(ServerFailure(e.toString()));
     }
   }
 }

@@ -1,10 +1,12 @@
-import 'package:catalyst/core/databases/cache_helper.dart';
-import 'package:catalyst/features/auth/data/models/login_request.dart';
+import 'dart:io';
+
+import 'package:catalyst/core/services/notification_services.dart';
+import 'package:catalyst/features/auth/data/models/auth_request_model.dart';
 import 'package:catalyst/features/auth/data/repos/auth_repo_implementation.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:dartz/dartz.dart';
-import 'package:catalyst/features/auth/data/models/auth_response_model.dart';
 import 'package:catalyst/core/errors/exceptions.dart';
 
 part 'login_state.dart';
@@ -19,18 +21,43 @@ class LoginCubit extends Cubit<LoginCubitState> {
   Future<void> login() async {
     emit(LoginCubitLoading());
 
-    Either<Failure, AuthResponseModel> result = await _authRepo.login(
+    // Get FCM Token
+    String? fcmToken = await NotificationService.init();
+
+    // Get Device Info
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    String? deviceId;
+    String? deviceType;
+
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      deviceId = androidInfo.id;
+      deviceType = androidInfo.model;
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      deviceId = iosInfo.identifierForVendor;
+      deviceType = iosInfo.model;
+    }
+
+    Either<Failure, bool> result = await _authRepo.login(
       LoginRequest(
         email: emailController.text,
         password: passwordController.text,
+        deviceData: DeviceData(
+          fcmToken: fcmToken ?? "",
+          deviceId: deviceId ?? "",
+          deviceType: deviceType ?? "",
+        ),
       ).toJson(),
     );
 
-    result.fold((failure) => emit(LoginCubitError(failure.errMessage)), (data) {
-      CacheHelper.saveData(key: 'token', value: data.data.token);
-      print('==================${data.data.token}==================');
-
-      emit(LoginCubitSuccess(data.message));
-    });
+    result.fold(
+      (failure) {
+        if (!isClosed) emit(LoginCubitError(failure.errMessage));
+      },
+      (isConfirmed) {
+        if (!isClosed) emit(LoginCubitSuccess(isConfirmed));
+      },
+    );
   }
 }

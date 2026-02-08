@@ -1,18 +1,35 @@
+import 'dart:io';
+
+import 'package:catalyst/core/databases/cache/cache_helper.dart';
+import 'package:catalyst/core/services/notification_services.dart';
 import 'package:catalyst/core/utils/routs.dart';
 import 'package:catalyst/features/auth/data/repos/auth_repo_implementation.dart';
 import 'package:catalyst/features/auth/presentation/cubit/forget%20password%20cubit/forget_password_cubit.dart';
+import 'package:catalyst/features/auth/presentation/cubit/logout_cubit/logout_cubit.dart';
 import 'package:catalyst/features/teachers%20corses/presentation/cubits/get%20all%20courses%20cubit/get_all_courses_cubit.dart';
 import 'package:catalyst/features/teachers%20corses/data/repos/courses_repo_impl.dart';
 import 'package:catalyst/features/teachers%20corses/presentation/cubits/join%20lesson%20cubit/join_lesson_cubit.dart';
+import 'package:catalyst/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:catalyst/core/databases/cache_helper.dart';
 import 'package:catalyst/core/utils/service_locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  CacheHelper.init();
+  await CacheHelper.init();
   setupServiceLocator();
+  // init firebase
+  if (!Platform.isLinux) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
+
+  // init notification service
+  if (!Platform.isLinux) {
+    await NotificationService.init();
+  }
   runApp(const CatalystStudent());
 }
 
@@ -24,15 +41,16 @@ class CatalystStudent extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
+          create: (context) => LogoutCubit(getIt.get<AuthRepoImplementation>()),
+        ),
+        BlocProvider(
           create: (context) => JoinLessonCubit(getIt.get<CoursesRepoImpl>()),
         ),
         BlocProvider(
           create: (context) =>
               ForgetPasswordCubit(getIt.get<AuthRepoImplementation>()),
         ),
-        BlocProvider(
-          create: (context) => GetAllCoursesCubit(getIt.get<CoursesRepoImpl>()),
-        ),
+        BlocProvider(create: (context) => getIt<GetAllCoursesCubit>()),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,

@@ -1,8 +1,10 @@
 import 'package:catalyst/core/utils/assets.dart';
 import 'package:catalyst/core/utils/routs.dart';
+import 'package:catalyst/features/auth/presentation/cubit/logout_cubit/logout_cubit.dart';
 import 'package:catalyst/features/drawer/drawer_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 
@@ -146,6 +148,7 @@ class CustomDrawer extends StatelessWidget {
                         iconSize: 22,
                         padding: EdgeInsets.zero,
                         onPressed: () {
+                          context.read<LogoutCubit>().logout();
                           GoRouter.of(context).go(Routs.login);
                         },
                       ),

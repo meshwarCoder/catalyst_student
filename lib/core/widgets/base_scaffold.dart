@@ -1,3 +1,4 @@
+import 'package:catalyst/core/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 
 class BaseScaffold extends StatelessWidget {
@@ -6,18 +7,24 @@ class BaseScaffold extends StatelessWidget {
     required this.child,
     this.drawer,
     this.appBar,
+    this.title,
+    this.showAppBar = true,
   });
 
   final Widget child;
   final Widget? drawer;
   final PreferredSizeWidget? appBar;
+  final String? title;
+  final bool showAppBar;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffEEEEEE),
+      backgroundColor: const Color(0xffEEEEEE),
       drawer: drawer,
-      appBar: appBar,
+      appBar:
+          appBar ??
+          (showAppBar && title != null ? CustomAppBar(title: title) : null),
       body: child,
     );
   }

@@ -1,3 +1,7 @@
+//response login and register are the same
+
+//auth response model
+
 class AuthResponseModel {
   final bool success;
   final String message;
@@ -9,6 +13,7 @@ class AuthResponseModel {
     required this.data,
   });
 
+  //auth response model to json
   factory AuthResponseModel.fromJson(Map<String, dynamic> json) {
     return AuthResponseModel(
       success: json['success'],
@@ -16,48 +21,32 @@ class AuthResponseModel {
       data: Data.fromJson(json['data']),
     );
   }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'message': message,
-      'data': data.toJson(),
-    };
-  }
 }
 
+//data model
 class Data {
-  final String token;
+  final String accessToken;
+  final String refreshToken;
   final int id;
-  final String fullName;
   final String email;
-  final String type;
+  final bool isConfirmed;
 
   Data({
-    required this.token,
+    required this.accessToken,
+    required this.refreshToken,
     required this.id,
-    required this.fullName,
     required this.email,
-    required this.type,
+    required this.isConfirmed,
   });
 
+  //data model to json
   factory Data.fromJson(Map<String, dynamic> json) {
     return Data(
-      token: json['token'],
+      accessToken: json['accessToken'],
+      refreshToken: json['refreshToken'],
       id: json['id'],
-      fullName: json['fullName'],
       email: json['email'],
-      type: json['type'],
+      isConfirmed: json['isConfirmed'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'token': token,
-      'id': id,
-      'fullName': fullName,
-      'email': email,
-      'type': type,
-    };
   }
 }

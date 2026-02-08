@@ -28,6 +28,7 @@ class Lesson {
   final int studentsCount;
   final Teacher teacher;
   final List<Schedule> schedules;
+  final bool isJoined;
 
   const Lesson({
     required this.id,
@@ -35,6 +36,7 @@ class Lesson {
     required this.studentsCount,
     required this.teacher,
     required this.schedules,
+    this.isJoined = false,
   });
 
   factory Lesson.fromJson(Map<String, dynamic> json) {
@@ -48,6 +50,18 @@ class Lesson {
               ?.map((e) => Schedule.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      isJoined: json['isJoined'] as bool? ?? false,
+    );
+  }
+
+  Lesson copyWith({bool? isJoined}) {
+    return Lesson(
+      id: id,
+      subject: subject,
+      studentsCount: studentsCount,
+      teacher: teacher,
+      schedules: schedules,
+      isJoined: isJoined ?? this.isJoined,
     );
   }
 }
