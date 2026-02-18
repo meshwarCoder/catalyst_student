@@ -9,7 +9,13 @@ class ExamQuestionsLoading extends ExamQuestionsState {}
 
 class ExamQuestionsSuccess extends ExamQuestionsState {
   final ExamDetailsModel examDetails;
-  ExamQuestionsSuccess(this.examDetails);
+  final int remainingSeconds;
+  final Map<int, dynamic> answers;
+  ExamQuestionsSuccess({
+    required this.examDetails,
+    required this.remainingSeconds,
+    required this.answers,
+  });
 }
 
 class ExamQuestionsError extends ExamQuestionsState {

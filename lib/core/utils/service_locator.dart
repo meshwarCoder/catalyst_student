@@ -12,6 +12,7 @@ import 'package:catalyst/features/my_lessons/data/repo/lesson_exams_repo_impl.da
 import 'package:catalyst/features/my_lessons/presentation/cubit/lesson_exams_cubit.dart';
 import 'package:catalyst/features/my_lessons/data/repo/exam_questions_repo.dart';
 import 'package:catalyst/features/my_lessons/presentation/cubit/exam_questions_cubit.dart';
+import 'package:catalyst/core/utils/time_service.dart';
 import 'package:get_it/get_it.dart';
 
 final getIt = GetIt.instance;
@@ -19,6 +20,7 @@ final getIt = GetIt.instance;
 void setupServiceLocator() {
   // ========== CORE ==========
   getIt.registerLazySingleton<Dio>(() => Dio());
+  getIt.registerLazySingleton<TimeService>(() => TimeService());
 
   getIt.registerLazySingleton<DioService>(() => DioService(dio: getIt<Dio>()));
 

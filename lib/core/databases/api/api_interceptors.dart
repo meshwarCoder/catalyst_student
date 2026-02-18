@@ -1,11 +1,16 @@
 import 'package:catalyst/core/databases/api/constant.dart';
 import 'package:catalyst/core/databases/cache/cache_helper.dart';
+import 'package:catalyst/core/utils/service_locator.dart';
+import 'package:catalyst/core/utils/time_service.dart';
 import 'package:dio/dio.dart';
 import 'dart:async';
+import 'dart:io';
 
 class ApiInterceptors extends Interceptor {
   bool _isRefreshing = false;
   final _failedRequestsQueue = <Map<String, dynamic>>[];
+
+  static void Function()? onUnAuthorized;
 
   @override
   void onRequest(
@@ -30,6 +35,20 @@ class ApiInterceptors extends Interceptor {
     }
 
     return handler.next(options);
+  }
+
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    final dateHeader = response.headers.value('date');
+    if (dateHeader != null) {
+      try {
+        final serverTime = HttpDate.parse(dateHeader);
+        getIt<TimeService>().updateDrift(serverTime);
+      } catch (e) {
+        print('DEBUG: Error parsing date header: $e');
+      }
+    }
+    return handler.next(response);
   }
 
   @override
@@ -90,7 +109,7 @@ class ApiInterceptors extends Interceptor {
   Future<bool> _refreshToken() async {
     final refreshToken = await CacheHelper.getData(key: 'refreshToken');
     print('DEBUG: _refreshToken process started');
-    print('DEBUG: [RefreshToken] found in cache: $refreshToken');
+    // print('DEBUG: [RefreshToken] found in cache: $refreshToken'); // Security: Avoid printing full token
     if (refreshToken == null) {
       print('DEBUG: No [RefreshToken] found. Cannot refresh.');
       return false;
@@ -99,13 +118,14 @@ class ApiInterceptors extends Interceptor {
     try {
       final dio = Dio(BaseOptions(baseUrl: EndPoint.baseUrl));
       print('DEBUG: Sending refresh request to: ${EndPoint.refreshToken}');
+
       final response = await dio.post(
         EndPoint.refreshToken,
         data: {'refreshToken': refreshToken},
       );
 
       print('DEBUG: Refresh response status: ${response.statusCode}');
-      print('DEBUG: Refresh response data: ${response.data}');
+      // print('DEBUG: Refresh response data: ${response.data}');
 
       if (response.statusCode == 200) {
         final data = response.data['data'];
@@ -114,8 +134,6 @@ class ApiInterceptors extends Interceptor {
 
         if (newAccessToken != null && newRefreshToken != null) {
           print('DEBUG: Refresh SUCCESS! Saving new tokens.');
-          print('DEBUG: New [AccessToken]: $newAccessToken');
-          print('DEBUG: New [RefreshToken]: $newRefreshToken');
           await CacheHelper.saveData(key: 'token', value: newAccessToken);
           await CacheHelper.saveData(
             key: 'refreshToken',
@@ -130,6 +148,21 @@ class ApiInterceptors extends Interceptor {
     } on DioException catch (e) {
       print('DEBUG: DioException during refresh: ${e.message}');
       print('DEBUG: Refresh error response: ${e.response?.data}');
+
+      // Check for reuse detection or invalid token
+      if (e.response?.statusCode == 400 ||
+          e.response?.statusCode == 401 ||
+          e.response?.statusCode == 403) {
+        final msg = e.response?.data.toString().toLowerCase() ?? '';
+        if (msg.contains('reuse') ||
+            msg.contains('invalid') ||
+            msg.contains('expired')) {
+          print(
+            'CRITICAL: Refresh token rejected (${e.response?.statusCode}). Clearing cache to force logout.',
+          );
+          await CacheHelper.clearAllData();
+        }
+      }
       return false;
     } catch (e) {
       print('DEBUG: Unexpected error during refresh: $e');

@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:catalyst/core/databases/api/api_interceptors.dart';
 import 'package:catalyst/core/databases/cache/cache_helper.dart';
 import 'package:catalyst/core/services/notification_services.dart';
 import 'package:catalyst/core/utils/routs.dart';
+import 'package:catalyst/core/utils/time_service.dart';
 import 'package:catalyst/features/auth/data/repos/auth_repo_implementation.dart';
 import 'package:catalyst/features/auth/presentation/cubit/forget%20password%20cubit/forget_password_cubit.dart';
 import 'package:catalyst/features/auth/presentation/cubit/logout_cubit/logout_cubit.dart';
@@ -19,6 +21,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await CacheHelper.init();
   setupServiceLocator();
+
+  // Handle unauthorized events (e.g. refresh token reuse)
+  ApiInterceptors.onUnAuthorized = () {
+    print('DEBUG: Force logout triggered. Navigating to Login.');
+    Routs.router.go(Routs.login);
+  };
+
+  await getIt<TimeService>().init();
   // init firebase
   if (!Platform.isLinux) {
     await Firebase.initializeApp(

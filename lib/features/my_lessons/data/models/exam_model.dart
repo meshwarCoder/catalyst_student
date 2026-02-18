@@ -4,7 +4,7 @@ class ExamModel {
   final String examName;
   final int maxGrade;
   final String examDateTime;
-  final String closingDate;
+  final String? closingDate;
   final int durationMinutes;
   final String examType;
 
@@ -26,7 +26,7 @@ class ExamModel {
       examName: json['examName'] as String? ?? '',
       maxGrade: json['maxGrade'] as int? ?? 0,
       examDateTime: json['examDateTime'] as String? ?? '',
-      closingDate: json['closingDate'] as String? ?? '',
+      closingDate: json['closingDate'] as String?,
       durationMinutes: json['durationMinutes'] as int? ?? 0,
       examType: json['examType'] as String? ?? 'ONLINE',
     );
