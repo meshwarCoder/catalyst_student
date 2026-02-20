@@ -1,6 +1,7 @@
 import 'package:catalyst/core/utils/service_locator.dart';
 import 'package:catalyst/features/my_lessons/presentation/cubit/my_lessons_cubit.dart';
 import 'package:catalyst/features/my_lessons/presentation/widgets/my_lesson_item.dart';
+import 'package:catalyst/core/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -39,25 +40,22 @@ class MyClassesView extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 24),
-                        Text(
-                          "No Classes Joined Yet",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey.shade800,
-                          ),
+                        CustomText(
+                          text: "No Classes Joined Yet",
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey.shade800,
                         ),
                         const SizedBox(height: 12),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 40),
-                          child: Text(
-                            "You haven't enrolled in any classes. Join a course to track your lessons here.",
+                          child: CustomText(
+                            text:
+                                "You haven't enrolled in any classes. Join a course to track your lessons here.",
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.grey.shade600,
-                              height: 1.5,
-                            ),
+                            fontSize: 15,
+                            color: Colors.grey.shade600,
+                            height: 1.5,
                           ),
                         ),
                       ],

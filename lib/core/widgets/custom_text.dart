@@ -9,6 +9,10 @@ class CustomText extends StatelessWidget {
     this.fontWeight,
     this.color,
     this.letterSpacing,
+    this.textAlign,
+    this.maxLines,
+    this.overflow,
+    this.height,
   });
 
   final String text;
@@ -16,16 +20,24 @@ class CustomText extends StatelessWidget {
   final FontWeight? fontWeight;
   final Color? color;
   final double? letterSpacing;
+  final TextAlign? textAlign;
+  final int? maxLines;
+  final TextOverflow? overflow;
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
+      textAlign: textAlign,
+      maxLines: maxLines,
+      overflow: overflow,
       style: GoogleFonts.comfortaa(
         color: color ?? Colors.black,
         fontSize: fontSize ?? 16,
         fontWeight: fontWeight ?? FontWeight.normal,
         letterSpacing: letterSpacing ?? 0,
+        height: height,
       ),
     );
   }

@@ -17,14 +17,18 @@ class TeacherCourseItem extends StatelessWidget {
     return BlocConsumer<JoinLessonCubit, JoinLessonState>(
       listener: (context, state) {
         if (state is JoinLessonError) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: CustomText(text: state.message, color: Colors.white),
+            ),
+          );
         }
         if (state is JoinLessonSuccess) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: CustomText(text: state.message, color: Colors.white),
+            ),
+          );
         }
       },
       builder: (context, state) {

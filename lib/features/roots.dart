@@ -1,6 +1,7 @@
 import 'package:catalyst/core/utils/app_colors.dart';
 import 'package:catalyst/core/widgets/app_bar.dart';
 import 'package:catalyst/core/widgets/base_scaffold.dart';
+import 'package:catalyst/core/widgets/custom_text.dart';
 import 'package:catalyst/features/drawer/drawer.dart';
 import 'package:catalyst/features/home/presentation/views/home_view.dart';
 import 'package:catalyst/features/teachers%20corses/presentation/views/teatcher_corses.dart';
@@ -30,7 +31,9 @@ class _RootState extends State<Root> {
     const HomeView(),
     const MyClassesView(),
     const TeacherCoursesView(),
-    const Scaffold(body: Center(child: Text("Profile"))),
+    const Scaffold(
+      body: Center(child: CustomText(text: "Profile")),
+    ),
   ];
 
   @override

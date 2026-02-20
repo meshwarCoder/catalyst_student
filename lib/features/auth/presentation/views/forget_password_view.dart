@@ -1,5 +1,6 @@
 import 'package:catalyst/core/widgets/base_scaffold.dart';
 import 'package:catalyst/core/widgets/custom_textfield.dart';
+import 'package:catalyst/core/widgets/custom_text.dart';
 import 'package:catalyst/features/auth/presentation/cubit/forget%20password%20cubit/forget_password_cubit.dart';
 import 'package:catalyst/features/auth/presentation/cubit/forget%20password%20cubit/forget_password_state.dart';
 import 'package:catalyst/features/auth/presentation/widgets/auth_background.dart';
@@ -28,15 +29,19 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       child: BlocListener<ForgetPasswordCubit, ForgetPasswordState>(
         listener: (context, state) {
           if (state is ForgetPasswordSuccess) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: CustomText(text: state.message, color: Colors.white),
+              ),
+            );
             GoRouter.of(context).push(Routs.sendEmail);
           }
           if (state is ForgetPasswordFailure) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: CustomText(text: state.message, color: Colors.white),
+              ),
+            );
           }
         },
         child: Stack(

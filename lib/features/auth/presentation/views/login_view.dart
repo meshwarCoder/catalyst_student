@@ -31,9 +31,11 @@ class _LoginViewState extends State<LoginView> {
       child: BlocListener<LoginCubit, LoginCubitState>(
         listener: (context, state) {
           if (state is LoginCubitError) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: CustomText(text: state.message, color: Colors.white),
+              ),
+            );
           }
           if (state is LoginCubitSuccess) {
             if (state.isConfirmed) {

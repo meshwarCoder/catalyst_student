@@ -8,7 +8,7 @@ class LessonExamsInitial extends LessonExamsState {}
 class LessonExamsLoading extends LessonExamsState {}
 
 class LessonExamsSuccess extends LessonExamsState {
-  final List<ExamModel> exams;
+  final List<StudentExamEntity> exams;
   LessonExamsSuccess(this.exams);
 }
 

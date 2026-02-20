@@ -10,6 +10,10 @@ import 'package:catalyst/features/my_lessons/data/repo/my_lessons_repo_impl.dart
 import 'package:catalyst/features/my_lessons/presentation/cubit/my_lessons_cubit.dart';
 import 'package:catalyst/features/my_lessons/data/repo/lesson_exams_repo_impl.dart';
 import 'package:catalyst/features/my_lessons/presentation/cubit/lesson_exams_cubit.dart';
+import 'package:catalyst/features/my_lessons/domain/repo/exam_result_repo.dart';
+import 'package:catalyst/features/my_lessons/data/repo/exam_result_repo_impl.dart';
+import 'package:catalyst/features/my_lessons/domain/use_cases/get_exam_result_use_case.dart';
+import 'package:catalyst/features/my_lessons/presentation/cubit/exam_result_cubit.dart';
 import 'package:catalyst/features/my_lessons/data/repo/exam_questions_repo.dart';
 import 'package:catalyst/features/my_lessons/presentation/cubit/exam_questions_cubit.dart';
 import 'package:catalyst/core/utils/time_service.dart';
@@ -80,5 +84,18 @@ void setupServiceLocator() {
 
   getIt.registerFactory<ExamQuestionsCubit>(
     () => ExamQuestionsCubit(getIt<ExamQuestionsRepoImpl>()),
+  );
+
+  // ========== EXAM RESULT ==========
+  getIt.registerLazySingleton<ExamResultRepo>(
+    () => ExamResultRepoImpl(dioService: getIt<DioService>()),
+  );
+
+  getIt.registerLazySingleton<GetExamResultUseCase>(
+    () => GetExamResultUseCase(getIt<ExamResultRepo>()),
+  );
+
+  getIt.registerFactory<ExamResultCubit>(
+    () => ExamResultCubit(getExamResultUseCase: getIt<GetExamResultUseCase>()),
   );
 }

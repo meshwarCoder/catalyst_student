@@ -32,17 +32,27 @@ class _RegisterViewState extends State<RegisterView> {
       child: BlocListener<RegisterCubit, RegisterCubitState>(
         listener: (context, state) {
           if (state is RegisterCubitSuccess) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.successMessage)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: CustomText(
+                  text: state.successMessage,
+                  color: Colors.white,
+                ),
+              ),
+            );
             GoRouter.of(context).go(
               Routs.login,
               extra: context.read<RegisterCubit>().emailController.text,
             );
           } else if (state is RegisterCubitError) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.errorMessage)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: CustomText(
+                  text: state.errorMessage,
+                  color: Colors.white,
+                ),
+              ),
+            );
           }
         },
         child: Stack(

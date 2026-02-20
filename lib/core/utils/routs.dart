@@ -17,6 +17,8 @@ import 'package:catalyst/features/teachers%20corses/presentation/views/teatcher_
 import 'package:catalyst/features/my_lessons/presentation/views/student_lesson_details_view.dart';
 import 'package:catalyst/features/my_lessons/data/models/my_lesson_model.dart';
 import 'package:catalyst/features/my_lessons/presentation/views/exam_questions_view.dart';
+import 'package:catalyst/features/my_lessons/presentation/views/student_exam_result_view.dart';
+import 'package:catalyst/features/my_lessons/presentation/cubit/exam_result_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -36,6 +38,7 @@ class Routs {
   static const String teacherCourses = '/teacherCourses';
   static const String studentLessonDetails = '/studentLessonDetails';
   static const String examQuestions = '/examQuestions';
+  static const String examResult = '/examResult';
 
   static final GoRouter router = GoRouter(
     routes: [
@@ -102,6 +105,13 @@ class Routs {
         path: examQuestions,
         builder: (context, state) =>
             ExamQuestionsView(examId: state.extra as int),
+      ),
+      GoRoute(
+        path: examResult,
+        builder: (context, state) => BlocProvider(
+          create: (context) => getIt<ExamResultCubit>(),
+          child: StudentExamResultScreen(examId: state.extra as int),
+        ),
       ),
     ],
   );

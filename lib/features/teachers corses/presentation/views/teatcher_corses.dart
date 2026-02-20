@@ -26,9 +26,11 @@ class _TeacherCoursesViewState extends State<TeacherCoursesView> {
     return BlocConsumer<GetAllCoursesCubit, GetAllCoursesState>(
       listener: (context, state) {
         if (state is GetAllCoursesError) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: CustomText(text: state.message, color: Colors.white),
+            ),
+          );
         }
       },
       builder: (context, state) {

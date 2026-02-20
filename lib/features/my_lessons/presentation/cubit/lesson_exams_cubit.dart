@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:catalyst/features/my_lessons/data/models/exam_model.dart';
 import 'package:catalyst/features/my_lessons/data/repo/lesson_exams_repo.dart';
+import 'package:catalyst/features/my_lessons/domain/entities/student_exam_entity.dart';
 import 'package:meta/meta.dart';
 
 part 'lesson_exams_state.dart';

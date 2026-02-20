@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:catalyst/core/widgets/custom_text.dart';
 
 class SectionListItem extends StatelessWidget {
   final String title;
@@ -32,13 +33,11 @@ class SectionListItem extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.all(12.0),
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                  color: Colors.black87,
-                ),
+              child: CustomText(
+                text: title,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+                color: Colors.black87,
               ),
             ),
           ],

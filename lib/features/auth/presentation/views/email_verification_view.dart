@@ -20,13 +20,20 @@ class EmailVerificationView extends StatelessWidget {
       child: BlocListener<EmailVerificationCubit, EmailVerificationState>(
         listener: (context, state) {
           if (state is EmailVerificationSuccess) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: CustomText(text: state.message, color: Colors.white),
+              ),
+            );
           } else if (state is EmailVerificationFailure) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.errMessage)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: CustomText(
+                  text: state.errMessage,
+                  color: Colors.white,
+                ),
+              ),
+            );
           }
         },
         child: AuthBackground(

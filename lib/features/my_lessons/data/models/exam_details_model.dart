@@ -2,7 +2,7 @@ class ExamDetailsModel {
   final int id;
   final int lessonId;
   final String examName;
-  final int maxGrade;
+  final num maxGrade;
   final String examDateTime;
   final String? closingDate;
   final int durationMinutes;
@@ -26,7 +26,7 @@ class ExamDetailsModel {
       id: json['id'] as int? ?? 0,
       lessonId: json['lessonId'] as int? ?? 0,
       examName: json['examName'] as String? ?? '',
-      maxGrade: json['maxGrade'] as int? ?? 0,
+      maxGrade: json['maxGrade'] as num? ?? 0,
       examDateTime: json['examDateTime'] as String? ?? '',
       closingDate: json['closingDate'] as String?,
       durationMinutes: json['durationMinutes'] as int? ?? 0,
@@ -45,7 +45,7 @@ class QuestionModel {
   final String text;
   final String type; // MCQ, TRUE_FALSE, TEXT
   final List<String> options;
-  final int maxPoints;
+  final num maxPoints;
 
   QuestionModel({
     required this.id,
@@ -65,7 +65,7 @@ class QuestionModel {
               ?.map((e) => e.toString())
               .toList() ??
           [],
-      maxPoints: json['maxPoints'] as int? ?? 0,
+      maxPoints: json['maxPoints'] as num? ?? 0,
     );
   }
 }

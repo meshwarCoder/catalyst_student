@@ -1,0 +1,1 @@
+enum ExamType { MCQ, WRITING, TRUE_FALSE, MIXED }
